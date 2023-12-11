@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mynote/PL/NoteContainer.dart';
-
 import '../DL/ConstantSql.dart';
 import '../DL/SqlDb.dart';
 
@@ -13,18 +12,21 @@ class NotePage extends StatefulWidget {
 }
 
 class _NotePageState extends State<NotePage> {
-
   ConstantSql sqlQuery = ConstantSql();
   SqlDb sqlDataBase = SqlDb();
-  bool isloading =true;
+  bool isloading = true;
   List notes = [];
+  List title = [];
 
   Future readData() async {
-    List<Map<String, dynamic>> response =
-    await sqlDataBase.readData(sqlQuery.selectData);
-    notes.addAll(response);
-    isloading =false;
-    if(this.mounted){
+    List<Map<String, dynamic>> noteResponse =
+        await sqlDataBase.readData(sqlQuery.selectData);
+    List<Map<String, dynamic>> titleResponse =
+        await sqlDataBase.readData(sqlQuery.selectData2);
+    notes.addAll(noteResponse);
+    title.addAll(titleResponse);
+    isloading = false;
+    if (mounted) {
       setState(() {});
     }
   }
@@ -40,23 +42,38 @@ class _NotePageState extends State<NotePage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        //*******************************************
+        systemOverlayStyle:const SystemUiOverlayStyle(
+            statusBarColor: Colors.redAccent,
+            statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search,size: 30,)),
           IconButton(
-          onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> NoteContainer()));
-          }
-        //       onPressed: () async {
-        //   var res = await sqlDataBase.insertData(sqlQuery.insertData);
-        //   print("THE RES = $res");
-        //   readData();
-        // }
-        , icon: const Icon(Icons.add_circle,size: 30,)),
+              onPressed: () {},
+              highlightColor: Colors.redAccent,
+              splashColor: Colors.redAccent,
+              icon: const Icon(
+                Icons.search,
+                size: 30,
+              )),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  readData();
+                });
+              },
+              highlightColor: Colors.redAccent,
+              splashColor: Colors.redAccent,
+              icon: const Icon(
+                Icons.add_circle,
+                size: 30,
+              )),
+          const SizedBox(
+            width: 20,
+          ),
         ],
-        title: Text("llll"),
+        title: const Text("llll"),
       ),
-
       body: Container(
         width: size.width,
         height: size.height,
@@ -64,17 +81,37 @@ class _NotePageState extends State<NotePage> {
           children: [
             ListView.builder(
               shrinkWrap: true,
-              physics:const  NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: notes.length,
               itemBuilder: (BuildContext context, int index) {
-                final Map<String, dynamic> data = notes[index];
+                final Map<String, dynamic> noteData = notes[index];
+                final Map<String, dynamic> titleData = title[index];
                 return Card(
                   child: ListTile(
-                    title:Text("${data['note']}")),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("${noteData['note']}".length <= 30
+                            ? "${noteData['note']}"
+                            : "${noteData['note']}".substring(0, 30)),
+                        Text("${titleData['title']}")
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const NoteContainer()));
+        },
+        backgroundColor: Colors.redAccent,
+        child: const Icon(
+          Icons.add,
         ),
       ),
     );

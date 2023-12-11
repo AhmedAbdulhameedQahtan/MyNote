@@ -27,7 +27,8 @@ class SqlDb{
     await db.execute('''
     CREATE TABLE "mynotes" (
     'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    'note' TEXT NOT NULL
+    'note' TEXT NOT NULL,
+    'title' TEXT 
     )
     ''');
     print("DATABASE IS CREATED ====================================");

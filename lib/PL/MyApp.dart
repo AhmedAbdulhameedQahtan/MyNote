@@ -16,7 +16,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-       home:  NotePage(),
+       theme: ThemeData(
+         splashColor: Colors.redAccent,
+         primaryColor: Colors.redAccent,
+       ),
+       home:  const NotePage(),
 
     );
   }

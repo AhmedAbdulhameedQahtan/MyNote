@@ -1,50 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../DL/ConstantSql.dart';
+import '../DL/SqlDb.dart';
+import 'package:flutter/cupertino.dart';
 
 class NoteContainer extends StatefulWidget {
+  const NoteContainer({super.key});
   @override
   _NoteContainerState createState() => _NoteContainerState();
 }
 
 class _NoteContainerState extends State<NoteContainer> {
-  TextEditingController _noteController = TextEditingController();
-  TextEditingController _TitleController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   final int _maxlength = 30;
-  bool _isEditing = false;
-
-  @override
-  void dispose() {
-    _noteController.dispose();
-    _TitleController.dispose();
-    super.dispose();
-  }
+  SqlDb sqlDataBase = SqlDb();
+  ConstantSql sqlQuery = ConstantSql();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle:const SystemUiOverlayStyle(
+            statusBarColor: Colors.redAccent,
+            statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                dynamic res = await sqlDataBase.insertData(sqlQuery.insertData(
+                    _noteController.text.toString(),
+                    _titleController.text.toString()));
+              },
+              highlightColor: Colors.redAccent,
+              splashColor: Colors.redAccent,
+              icon: const Icon(
+                Icons.save_alt_sharp,
+                size: 30,
+              )),
+          const SizedBox(
+            width: 30,
+          ),
+        ],
       ),
       body: Container(
           width: size.width,
           height: size.height,
-          padding: EdgeInsets.only(left: 16, right: 16),
-          child:
-              // _isEditing
-              //     ?
-              SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 TextFormField(
                   maxLength: _maxlength,
-                  controller: _TitleController,
+                  controller: _titleController,
                   autofocus: true,
                   maxLines: 1,
                   decoration: const InputDecoration(
-                      hintText: 'Title',
-                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                      // border: UnderlineInputBorder(),),
+                    hintText: 'Title',
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
                   ),
                 ),
                 TextField(
@@ -58,51 +73,14 @@ class _NoteContainerState extends State<NoteContainer> {
                 )
               ],
             ),
-          )
-          //     : Text(
-          //   'Tap to write a note',
-          //   style: TextStyle(color: Colors.grey),
-          // ),
-          ),
-      // GestureDetector(
-      //   onTap: () {
-      //     setState(() {
-      //       _isEditing = true;
-      //     });
-      //   },
-      //   child: Container(
-      //     width: size.width,
-      //     height: size.height,
-      //     padding: EdgeInsets.only(left: 16, right: 16),
-      //     child: _isEditing
-      //         ? SingleChildScrollView(
-      //             child: Column(
-      //               children: [
-      //                 TextFormField(
-      //                   controller: _TitleController,
-      //                   autofocus: true,
-      //                   maxLines: 1,
-      //                   decoration: const InputDecoration(
-      //                       hintText: 'Title', border: InputBorder.none),
-      //                 ),
-      //                 TextField(
-      //                   controller: _noteController,
-      //                   autofocus: true,
-      //                   maxLines: null,
-      //                   decoration: InputDecoration(
-      //                     hintText: 'Write your note...',
-      //                     border: InputBorder.none,
-      //                   ),
-      //                 )
-      //               ],
-      //             ),
-      //           )
-      //         : Text(
-      //             'Tap to write a note',
-      //             style: TextStyle(color: Colors.grey),
-      //           ),
-      //   ),
-      // ),
+          )),
     );
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    _titleController.dispose();
+    super.dispose();
   }
 }
