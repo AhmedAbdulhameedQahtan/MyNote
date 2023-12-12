@@ -27,12 +27,15 @@ class _NotePageState extends State<NotePage> {
     title.addAll(titleResponse);
     isloading = false;
     if (mounted) {
-      setState(() {});
+      setState(() {
+        print("setstate of read data is called");
+      });
     }
   }
 
   @override
   void initState() {
+    print("initstate is called");
     readData();
     super.initState();
   }
@@ -59,6 +62,9 @@ class _NotePageState extends State<NotePage> {
           IconButton(
               onPressed: () {
                 setState(() {
+                  print("setstate of refresh is called");
+                  notes=[];
+                  title=[];
                   readData();
                 });
               },
@@ -74,19 +80,40 @@ class _NotePageState extends State<NotePage> {
         ],
         title: const Text("llll"),
       ),
-      body: Container(
-        width: size.width,
-        height: size.height,
-        child: ListView(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: notes.length,
-              itemBuilder: (BuildContext context, int index) {
-                final Map<String, dynamic> noteData = notes[index];
-                final Map<String, dynamic> titleData = title[index];
-                return Card(
+      body: bodyContainer(size),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) =>  NoteContainer()));
+        },
+        backgroundColor: Colors.redAccent,
+        child: const Icon(
+          Icons.add,
+        ),
+      ),
+    );
+  }
+
+  Container bodyContainer(Size size) {
+    return Container(
+      width: size.width,
+      height: size.height,
+      child: ListView(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: notes.length,
+            itemBuilder: (BuildContext context, int index) {
+              final Map<String, dynamic> noteData = notes[index];
+              final Map<String, dynamic> titleData = title[index];
+              return InkWell(
+                onTap: (){
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) =>  NoteContainer.Details("${noteData['note']}","${titleData['title']}")));
+                },
+                child: Card(
                   child: ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,21 +125,11 @@ class _NotePageState extends State<NotePage> {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const NoteContainer()));
-        },
-        backgroundColor: Colors.redAccent,
-        child: const Icon(
-          Icons.add,
-        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
