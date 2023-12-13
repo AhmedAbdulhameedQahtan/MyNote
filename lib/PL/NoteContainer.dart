@@ -50,7 +50,7 @@ Widget build(BuildContext context) {
                       return AlertDialog(
                         title: const Center(
                           child: Text(
-                            "Wite Note Please ..",
+                            "Write Note Please ..",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

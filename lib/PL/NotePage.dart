@@ -17,12 +17,16 @@ class _NotePageState extends State<NotePage> {
   bool isloading = true;
   List notes = [];
   List title = [];
+  List id=[];
 
   Future readData() async {
+    List<Map<String, dynamic>> idResponse =
+    await sqlDataBase.readData(sqlQuery.selectData3);
     List<Map<String, dynamic>> noteResponse =
         await sqlDataBase.readData(sqlQuery.selectData);
     List<Map<String, dynamic>> titleResponse =
         await sqlDataBase.readData(sqlQuery.selectData2);
+    id.addAll(idResponse);
     notes.addAll(noteResponse);
     title.addAll(titleResponse);
     isloading = false;
@@ -108,10 +112,69 @@ class _NotePageState extends State<NotePage> {
             itemBuilder: (BuildContext context, int index) {
               final Map<String, dynamic> noteData = notes[index];
               final Map<String, dynamic> titleData = title[index];
+              final Map<String, dynamic> idData = id[index];
+
               return InkWell(
                 onTap: (){
+                  print("++++++++++++++++++++++${idData['id']}");
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) =>  NoteContainer.Details("${noteData['note']}","${titleData['title']}")));
+                },
+                onLongPress: (){
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext) {
+                        return AlertDialog(
+                          title: const Center(
+                            child: Text(
+                              "Do You Delete This Note ?",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            TextButton(
+                              onPressed: () async {
+                                dynamic deletres = await sqlDataBase.deletData(sqlQuery.deletData(idData['id']));
+                                print("deletres was deleted successful");
+                                setState(() {
+                                  id=[];
+                                  notes=[];
+                                  title=[];
+                                  readData();
+                                  print("***********setstate after delet **********");
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                              child: const Text(
+                                "ok",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      });
                 },
                 child: Card(
                   child: ListTile(
