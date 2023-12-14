@@ -44,6 +44,15 @@ class _NotePageState extends State<NotePage> {
     super.initState();
   }
 
+  void _refreshData(){
+    setState(() {
+      id=[];
+     notes=[];
+     title=[];
+     readData();
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -67,9 +76,7 @@ class _NotePageState extends State<NotePage> {
               onPressed: () {
                 setState(() {
                   print("setstate of refresh is called");
-                  notes=[];
-                  title=[];
-                  readData();
+                  _refreshData();
                 });
               },
               highlightColor: Colors.redAccent,
@@ -113,21 +120,23 @@ class _NotePageState extends State<NotePage> {
               final Map<String, dynamic> noteData = notes[index];
               final Map<String, dynamic> titleData = title[index];
               final Map<String, dynamic> idData = id[index];
-
+              print(index);
+              print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
               return InkWell(
                 onTap: (){
-                  print("++++++++++++++++++++++${idData['id']}");
+                  print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) =>  NoteContainer.Details("${noteData['note']}","${titleData['title']}")));
                 },
                 onLongPress: (){
+                  print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
                   showDialog(
                       context: context,
                       builder: (BuildContext) {
                         return AlertDialog(
                           title: const Center(
                             child: Text(
-                              "Do You Delete This Note ?",
+                              "Delete This Note ?",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -155,10 +164,7 @@ class _NotePageState extends State<NotePage> {
                                 dynamic deletres = await sqlDataBase.deletData(sqlQuery.deletData(idData['id']));
                                 print("deletres was deleted successful");
                                 setState(() {
-                                  id=[];
-                                  notes=[];
-                                  title=[];
-                                  readData();
+                                  _refreshData();
                                   print("***********setstate after delet **********");
                                   Navigator.of(context).pop();
                                 });

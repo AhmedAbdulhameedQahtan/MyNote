@@ -42,9 +42,10 @@ class SqlDb{
 
   //قرائة البيانات من القاعدة
   readData(String sql)async{
+    print("==================the command you sen is=============$sql");
     Database? mydb = await myProjectData;
     List<Map?>  response = await mydb!.rawQuery(sql);
-    print("DATA IS READED ====================================");
+    print("DATA IS READED ====================================$response");
     return response;
   }
 

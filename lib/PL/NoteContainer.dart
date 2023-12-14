@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../DL/ConstantSql.dart';
 import '../DL/SqlDb.dart';
-import 'package:flutter/cupertino.dart';
 
 class NoteContainer extends StatefulWidget {
   String? noteDetails;
