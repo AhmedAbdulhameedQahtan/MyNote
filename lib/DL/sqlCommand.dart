@@ -6,11 +6,17 @@ class ConstantSql{
     return "INSERT INTO mynotes (note, title) VALUES ('$escapedNote', '$escapedTitle')";
   }
 
-  // String deletData = "DELETE FROM 'mynotes' WHERE id = 1";
+  String updateData(int id, String note, String title) {
+    String escapedNote = note.replaceAll("'", "''");
+    String escapedTitle = title.replaceAll("'", "''");
+    return "UPDATE mynotes SET note = '$escapedNote', title = '$escapedTitle' WHERE id = $id";
+  }
+
+
   String deletData(int noteId) {
     return "DELETE FROM 'mynotes' WHERE id ='$noteId' ";
   }
-  String selectData = "SELECT note FROM 'mynotes'";
-  String selectData2 = "SELECT title FROM 'mynotes'";
-  String selectData3 = "SELECT id FROM 'mynotes'";
+
+
+  String selectAllData = "SELECT * FROM 'mynotes'";
 }

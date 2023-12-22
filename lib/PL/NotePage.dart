@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mynote/PL/NoteContainer.dart';
-import '../DL/ConstantSql.dart';
+import '../DL/sqlCommand.dart';
 import '../DL/SqlDb.dart';
 
 class NotePage extends StatefulWidget {
@@ -15,20 +15,11 @@ class _NotePageState extends State<NotePage> {
   ConstantSql sqlQuery = ConstantSql();
   SqlDb sqlDataBase = SqlDb();
   bool isloading = true;
-  List notes = [];
-  List title = [];
-  List id=[];
+  List storeData = [];
 
   Future readData() async {
-    List<Map<String, dynamic>> idResponse =
-    await sqlDataBase.readData(sqlQuery.selectData3);
-    List<Map<String, dynamic>> noteResponse =
-        await sqlDataBase.readData(sqlQuery.selectData);
-    List<Map<String, dynamic>> titleResponse =
-        await sqlDataBase.readData(sqlQuery.selectData2);
-    id.addAll(idResponse);
-    notes.addAll(noteResponse);
-    title.addAll(titleResponse);
+    List<Map<String, dynamic>> dataResponse = await sqlDataBase.readData(sqlQuery.selectAllData);
+    storeData.addAll(dataResponse);
     isloading = false;
     if (mounted) {
       setState(() {
@@ -37,6 +28,7 @@ class _NotePageState extends State<NotePage> {
     }
   }
 
+
   @override
   void initState() {
     print("initstate is called");
@@ -44,22 +36,24 @@ class _NotePageState extends State<NotePage> {
     super.initState();
   }
 
-  void _refreshData(){
+
+  void _refreshData() {
     setState(() {
-      id=[];
-     notes=[];
-     title=[];
-     readData();
-      });
+      print("setstate of refresh is called");
+      storeData = [];
+      readData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       appBar: AppBar(
         //*******************************************
-        systemOverlayStyle:const SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.redAccent,
             statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
@@ -75,7 +69,6 @@ class _NotePageState extends State<NotePage> {
           IconButton(
               onPressed: () {
                 setState(() {
-                  print("setstate of refresh is called");
                   _refreshData();
                 });
               },
@@ -96,7 +89,7 @@ class _NotePageState extends State<NotePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) =>  NoteContainer()));
+              MaterialPageRoute(builder: (context) => NoteContainer()));
         },
         backgroundColor: Colors.redAccent,
         child: const Icon(
@@ -115,21 +108,18 @@ class _NotePageState extends State<NotePage> {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: notes.length,
+            itemCount: storeData.length,
             itemBuilder: (BuildContext context, int index) {
-              final Map<String, dynamic> noteData = notes[index];
-              final Map<String, dynamic> titleData = title[index];
-              final Map<String, dynamic> idData = id[index];
-              print(index);
-              print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
+              final Map<String, dynamic> notesData = storeData[index];
               return InkWell(
-                onTap: (){
-                  print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
+                onTap: () {
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) =>  NoteContainer.Details("${noteData['note']}","${titleData['title']}")));
+                      MaterialPageRoute(builder: (context) =>
+                          NoteContainer.Details(
+                              notesData['id'], "${notesData['note']}",
+                              "${notesData['title']}")));
                 },
-                onLongPress: (){
-                  print("++++++++++++++++++++++${idData['id']}++++++++++++++++++++++++");
+                onLongPress: () {
                   showDialog(
                       context: context,
                       builder: (BuildContext) {
@@ -161,11 +151,12 @@ class _NotePageState extends State<NotePage> {
                             SizedBox(width: 10),
                             TextButton(
                               onPressed: () async {
-                                dynamic deletres = await sqlDataBase.deletData(sqlQuery.deletData(idData['id']));
-                                print("deletres was deleted successful");
+                                dynamic deletres = await sqlDataBase.deletData(
+                                    sqlQuery.deletData(notesData['id']));
                                 setState(() {
                                   _refreshData();
-                                  print("***********setstate after delet **********");
+                                  print(
+                                      "***********setstate after delet **********");
                                   Navigator.of(context).pop();
                                 });
                               },
@@ -183,18 +174,32 @@ class _NotePageState extends State<NotePage> {
                       });
                 },
                 child: Card(
-                  child: ListTile(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("${noteData['note']}".length <= 30
-                            ? "${noteData['note']}"
-                            : "${noteData['note']}".substring(0, 30)),
-                        Text("${titleData['title']}")
-                      ],
-                    ),
-                  ),
-                ),
+              child: ListTile(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("${notesData['title']}",style: const TextStyle(fontWeight: FontWeight.w800,),),
+                  Text("${notesData['note']}".length <= 30
+                      ? "${notesData['note']}".replaceAll(RegExp(r'\s*\n\s*|\s+'), ' ')
+                      : "${notesData['note']}".substring(0, 30)),
+                  // \s*\n\s*: Matches any whitespace characters followed by a newline character and then followed by more whitespace characters.
+                  // This matches and removes empty lines while considering any leading/trailing whitespace.
+                  // |: OR operator.
+                  // \s+: Matches one or more whitespace characters occurring in the middle of lines.
+                ],
+
+              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text("${notesData['note']}".length <= 30
+              //         ? "${notesData['note']}"
+              //         : "${notesData['note']}".substring(0, 30)),
+              //     Text("${notesData['title']}")
+              //   ],
+              // ),
+              ),
+              ),
               );
             },
           ),

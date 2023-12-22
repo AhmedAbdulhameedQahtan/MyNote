@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../DL/ConstantSql.dart';
+import '../DL/sqlCommand.dart';
 import '../DL/SqlDb.dart';
 
 class NoteContainer extends StatefulWidget {
   String? noteDetails;
   String? titleDetails;
+  int? idDetails;
   NoteContainer({super.key, this.noteDetails , this.titleDetails});
-  NoteContainer.Details( this.noteDetails , this.titleDetails);
+  NoteContainer.Details(this.idDetails, this.noteDetails , this.titleDetails);
   @override
   _NoteContainerState createState() => _NoteContainerState();
 }
@@ -16,6 +17,7 @@ class _NoteContainerState extends State<NoteContainer> {
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final int _maxlength = 30;
+  bool _check = false;
   SqlDb sqlDataBase = SqlDb();
   ConstantSql sqlQuery = ConstantSql();
 
@@ -25,7 +27,7 @@ class _NoteContainerState extends State<NoteContainer> {
     if( widget.noteDetails != null){
       _noteController.text = widget.noteDetails!;
       _titleController.text = widget.titleDetails!;
-
+      _check=true;
     }
     super.initState();
   }
@@ -33,6 +35,7 @@ class _NoteContainerState extends State<NoteContainer> {
 @override
 Widget build(BuildContext context) {
   Size size = MediaQuery.of(context).size;
+  int? id = widget.idDetails;
   return Scaffold(
     appBar: AppBar(
       systemOverlayStyle: const SystemUiOverlayStyle(
@@ -75,15 +78,32 @@ Widget build(BuildContext context) {
                       );
                     });
               } else {
-                dynamic res = await sqlDataBase.insertData(
-                    sqlQuery.insertData(_noteController.text.toString(),
-                        _titleController.text.toString()));
-                setState(() {
-                  print("save set state is call");
-                  _noteController.text = "";
-                  _titleController.text = "";
-                  Navigator.of(context).pop();
-                });
+                print("======================$_check");
+                if(_check==true){
+                  dynamic res = await sqlDataBase.updateData(
+                    sqlQuery.updateData(id!, _noteController.text.toString(), _titleController.text.toString())
+                  );
+                  setState(() {
+                    _check=false;
+                    print("save set state is call");
+                    print("======================$_check");
+                    _noteController.text = "";
+                    _titleController.text = "";
+                      Navigator.of(context).pop();
+                  });
+                }else{
+                  dynamic res = await sqlDataBase.insertData(
+                      sqlQuery.insertData(_noteController.text.toString(),
+                          _titleController.text.toString()));
+                  setState(() {
+                    print("save set state is call");
+                    print("======================$_check");
+                    _noteController.text = "";
+                    _titleController.text = "";
+                    Navigator.of(context).pop();
+                  });
+                }
+
               }
             },
             highlightColor: Colors.redAccent,
