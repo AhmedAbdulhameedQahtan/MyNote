@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mynote/PL/NotePage.dart';
 import '../DL/sqlCommand.dart';
 import '../DL/SqlDb.dart';
 
@@ -89,7 +90,9 @@ Widget build(BuildContext context) {
                     print("======================$_check");
                     _noteController.text = "";
                     _titleController.text = "";
-                      Navigator.of(context).pop();
+                      // Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => const NotePage()));
                   });
                 }else{
                   dynamic res = await sqlDataBase.insertData(
@@ -100,7 +103,9 @@ Widget build(BuildContext context) {
                     print("======================$_check");
                     _noteController.text = "";
                     _titleController.text = "";
-                    Navigator.of(context).pop();
+                    // Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => const NotePage()));
                   });
                 }
 
@@ -116,6 +121,18 @@ Widget build(BuildContext context) {
           width: 30,
         ),
       ],
+      title: IconButton(
+        onPressed: (){
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const NotePage()));
+        },
+          highlightColor: Colors.redAccent,
+          splashColor: Colors.redAccent,
+          icon: const Icon(
+            Icons.arrow_back,
+            size: 30,
+          )
+      ),
     ),
     body: Container(
         width: size.width,

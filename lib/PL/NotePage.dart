@@ -47,10 +47,12 @@ class _NotePageState extends State<NotePage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+      drawer: Drawer(
+        width: size.width/1.5,
+
+      ),
       appBar: AppBar(
         //*******************************************
         systemOverlayStyle: const SystemUiOverlayStyle(
@@ -69,7 +71,8 @@ class _NotePageState extends State<NotePage> {
           IconButton(
               onPressed: () {
                 setState(() {
-                  _refreshData();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => NoteContainer()));
                 });
               },
               highlightColor: Colors.redAccent,
@@ -82,20 +85,9 @@ class _NotePageState extends State<NotePage> {
             width: 20,
           ),
         ],
-        title: const Text("llll"),
       ),
-      body: bodyContainer(size),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => NoteContainer()));
-        },
-        backgroundColor: Colors.redAccent,
-        child: const Icon(
-          Icons.add,
-        ),
-      ),
+      body: bodyContainer(size),
     );
   }
 
@@ -148,7 +140,7 @@ class _NotePageState extends State<NotePage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             TextButton(
                               onPressed: () async {
                                 dynamic deletres = await sqlDataBase.deletData(
@@ -189,15 +181,6 @@ class _NotePageState extends State<NotePage> {
                 ],
 
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Text("${notesData['note']}".length <= 30
-              //         ? "${notesData['note']}"
-              //         : "${notesData['note']}".substring(0, 30)),
-              //     Text("${notesData['title']}")
-              //   ],
-              // ),
               ),
               ),
               );
