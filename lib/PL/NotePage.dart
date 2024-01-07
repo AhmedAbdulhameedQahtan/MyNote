@@ -12,13 +12,15 @@ class NotePage extends StatefulWidget {
 }
 
 class _NotePageState extends State<NotePage> {
+  final TextEditingController _searchController = TextEditingController();
   ConstantSql sqlQuery = ConstantSql();
   SqlDb sqlDataBase = SqlDb();
   bool isloading = true;
   List storeData = [];
+  bool _isvisibal =false;
 
   Future readData() async {
-    List<Map<String, dynamic>> dataResponse = await sqlDataBase.readData(sqlQuery.selectAllData);
+    List<Map<String, dynamic>> dataResponse = await sqlDataBase.readData(sqlQuery.selectAllData());
     storeData.addAll(dataResponse);
     isloading = false;
     if (mounted) {
@@ -28,6 +30,19 @@ class _NotePageState extends State<NotePage> {
     }
   }
 
+  Future searchNote(str) async {
+    List<Map<String, dynamic>> searchResponse = await sqlDataBase.readData(
+        sqlQuery.searchData(str));
+    setState(() {
+      storeData.addAll(searchResponse);
+      isloading = false;
+    });
+    if (mounted) {
+      setState(() {
+        print("setstate of search data is called");
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -36,18 +51,26 @@ class _NotePageState extends State<NotePage> {
     super.initState();
   }
 
+  void _searchRefresh(str) {
+    setState(() {
+      print("setstate of refresh is called");
+      storeData = [];
+      searchNote(str);
+    });
+  }
 
   void _refreshData() {
     setState(() {
       print("setstate of refresh is called");
       storeData = [];
-      readData();
+       readData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    String _str ="";
     return Scaffold(
       drawer: Drawer(
         width: size.width/1.5,
@@ -60,8 +83,36 @@ class _NotePageState extends State<NotePage> {
             statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
         actions: [
+          Visibility(
+            visible: _isvisibal,
+            child: Container(
+              width: size.width/1.8,
+              child: TextFormField(
+                controller: _searchController,
+                onChanged: (str) async{
+                  _str!=_searchController.text.toString();
+                  print("object===================$str");
+                  _searchRefresh(str);
+                },
+                autofocus: true,
+                maxLines: 1,
+                decoration: const InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                       borderSide: BorderSide(color: Colors.white)),
+                ),
+              ),
+            ),
+          ),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  _isvisibal =!_isvisibal;
+                });
+                if(!_isvisibal){
+                  _searchController.clear();
+                  _refreshData();
+                }
+              },
               highlightColor: Colors.redAccent,
               splashColor: Colors.redAccent,
               icon: const Icon(
@@ -87,7 +138,13 @@ class _NotePageState extends State<NotePage> {
         ],
       ),
 
-      body: bodyContainer(size),
+      body: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (OverscrollIndicatorNotification? overScroll){
+          overScroll!.disallowIndicator();
+          return true;
+        },
+          child: bodyContainer(size)
+      ),
     );
   }
 
@@ -105,7 +162,7 @@ class _NotePageState extends State<NotePage> {
               final Map<String, dynamic> notesData = storeData[index];
               return InkWell(
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) =>
                           NoteContainer.Details(
                               notesData['id'], "${notesData['note']}",

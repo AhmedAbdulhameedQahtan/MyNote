@@ -17,6 +17,13 @@ class ConstantSql{
     return "DELETE FROM 'mynotes' WHERE id ='$noteId' ";
   }
 
+  String selectAllData() {
+    return "SELECT * FROM 'mynotes'";
+  }
 
-  String selectAllData = "SELECT * FROM 'mynotes'";
+  String searchData(String data ) {
+    String escapedData = data.replaceAll("'", "''");
+    return "SELECT id,note,title FROM 'mynotes' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
+  }
+
 }
