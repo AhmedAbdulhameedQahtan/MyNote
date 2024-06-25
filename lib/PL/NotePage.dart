@@ -75,6 +75,23 @@ class _NotePageState extends State<NotePage> {
   }
 
   File? _selectedPhoto;
+  // Future<void> _selectPhoto() async {
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  //
+  //   if (pickedFile != null) {
+  //     final Directory appDir = await getApplicationDocumentsDirectory();
+  //     final String path = appDir.path;
+  //     final File newImage = await File(pickedFile.path).copy('$path/user_profile.jpg');
+  //
+  //     // Save the path to shared_preferences
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     prefs.setString('user_profile', newImage.path);
+  //     setState(() {
+  //       _selectedPhoto = newImage;
+  //     });
+  //   }
+  // }
   Future<void> _selectPhoto() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -84,20 +101,22 @@ class _NotePageState extends State<NotePage> {
       final String path = appDir.path;
       final File newImage = await File(pickedFile.path).copy('$path/user_profile.jpg');
 
-      // Save the path to shared_preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('user_profile', newImage.path);
-
       setState(() {
         _selectedPhoto = newImage;
       });
+
+      // Save the path to shared_preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_profile', newImage.path);
+      _loadPhoto();
     }
   }
-  // =====================
+
+//  =====================
+
   Future<void> _loadPhoto() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? photoPath = prefs.getString('user_profile');
-    printAppDirectory();
     if (photoPath != null) {
       setState(() {
         _selectedPhoto = File(photoPath);
@@ -105,10 +124,7 @@ class _NotePageState extends State<NotePage> {
     }
   }
   // ===========================
-  Future<void> printAppDirectory() async {
-    final Directory appDir = await getApplicationDocumentsDirectory();
-    print(' my App Directory: ${appDir.path}');
-  }
+
   // ============================
   // Future<void> _selectPhoto() async {
   //   final picker = ImagePicker();
