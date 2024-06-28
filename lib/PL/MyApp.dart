@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mynote/PL/NoteContainer.dart';
 import 'package:mynote/PL/NotePage.dart';
+import 'package:get/get.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return  GetMaterialApp(
       debugShowCheckedModeBanner: false,
        theme: ThemeData(
          splashColor: Colors.redAccent,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:mynote/PL/NotePage.dart';
 import '../DL/sqlCommand.dart';
 import '../DL/SqlDb.dart';
@@ -64,7 +65,8 @@ Widget build(BuildContext context) {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Get.back();
+                              // Navigator.of(context).pop();
                             },
                             child: const Text(
                               "ok",
@@ -91,8 +93,9 @@ Widget build(BuildContext context) {
                     _noteController.text = "";
                     _titleController.text = "";
                       // Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const NotePage()));
+                    Get.off(const NotePage());
+                    // Navigator.of(context).pushReplacement(
+                    //     MaterialPageRoute(builder: (context) => const NotePage()));
                   });
                 }else{
                   dynamic res = await sqlDataBase.insertData(
@@ -104,8 +107,9 @@ Widget build(BuildContext context) {
                     _noteController.text = "";
                     _titleController.text = "";
                     // Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const NotePage()));
+                    Get.off(const NotePage());
+                    // Navigator.of(context).pushReplacement(
+                    //     MaterialPageRoute(builder: (context) => const NotePage()));
                   });
                 }
 
@@ -123,8 +127,9 @@ Widget build(BuildContext context) {
       ],
       title: IconButton(
         onPressed: (){
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const NotePage()));
+          Get.off(const NotePage());
+          // Navigator.of(context).pushReplacement(
+          //     MaterialPageRoute(builder: (context) => const NotePage()));
         },
           highlightColor: Colors.redAccent,
           splashColor: Colors.redAccent,

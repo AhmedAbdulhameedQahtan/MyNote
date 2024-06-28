@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:get/get.dart';
+
 
 class NotePage extends StatefulWidget {
   const NotePage({super.key});
@@ -103,11 +105,13 @@ class _NotePageState extends State<NotePage> {
 
       setState(() {
         _selectedPhoto = newImage;
+        Get.snackbar("", "photo updated successful");
       });
 
       // Save the path to shared_preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_profile', newImage.path);
+
       _loadPhoto();
     }
   }
@@ -315,8 +319,9 @@ class _NotePageState extends State<NotePage> {
           IconButton(
               onPressed: () {
                 setState(() {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => NoteContainer()));
+                   Get.off(NoteContainer());
+                  // Navigator.of(context).pushReplacement(
+                  //     MaterialPageRoute(builder: (context) => NoteContainer()));
                 });
               },
               highlightColor: Colors.redAccent,
@@ -357,12 +362,17 @@ class _NotePageState extends State<NotePage> {
               print("the num ===========${notesData['note']}");
               return InkWell(
                 onTap: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) =>
-                          NoteContainer.Details(
-                              notesData['id'], "${notesData['note']}",
-                              "${notesData['title']}")));
+                  Get.off(NoteContainer.Details(
+                      notesData['id'], "${notesData['note']}",
+                      "${notesData['title']}"));
+
+                  //   Navigator.of(context).pushReplacement(
+                  //       MaterialPageRoute(builder: (context) =>
+                  //           NoteContainer.Details(
+                  //               notesData['id'], "${notesData['note']}",
+                  //               "${notesData['title']}")));
                 },
+
                 onLongPress: () {
                   showDialog(
                       context: context,
@@ -381,7 +391,8 @@ class _NotePageState extends State<NotePage> {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                Get.back();
+                                // Navigator.of(context).pop();
                               },
                               child: const Text(
                                 "Cancel",
@@ -400,7 +411,8 @@ class _NotePageState extends State<NotePage> {
                                 setState(() {
                                   _refreshData();
                                   print("***********setstate after delet **********");
-                                  Navigator.of(context).pop();
+                                  Get.back();
+                                  // Navigator.of(context).pop();
                                 });
                               },
                               child: const Text(
