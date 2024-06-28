@@ -17,6 +17,10 @@ class ConstantSql{
     return "DELETE FROM 'mynotes' WHERE id ='$noteId' ";
   }
 
+  String deletTrashData(int noteId) {
+    return "DELETE FROM 'trash' WHERE id ='$noteId' ";
+  }
+
   String selectAllData() {
     return "SELECT * FROM 'mynotes'";
   }
@@ -27,6 +31,11 @@ class ConstantSql{
   String searchData(String data ) {
     String escapedData = data.replaceAll("'", "''");
     return "SELECT id,note,title FROM 'mynotes' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
+  }
+
+  String searchTrashData(String data ) {
+    String escapedData = data.replaceAll("'", "''");
+    return "SELECT id,note,title FROM 'trash' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
   }
 
   String moveToTrash(int id, String note, String title) {

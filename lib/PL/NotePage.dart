@@ -79,23 +79,7 @@ class _NotePageState extends State<NotePage> {
   }
 
   File? _selectedPhoto;
-  // Future<void> _selectPhoto() async {
-  //   final picker = ImagePicker();
-  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  //
-  //   if (pickedFile != null) {
-  //     final Directory appDir = await getApplicationDocumentsDirectory();
-  //     final String path = appDir.path;
-  //     final File newImage = await File(pickedFile.path).copy('$path/user_profile.jpg');
-  //
-  //     // Save the path to shared_preferences
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     prefs.setString('user_profile', newImage.path);
-  //     setState(() {
-  //       _selectedPhoto = newImage;
-  //     });
-  //   }
-  // }
+
   Future<void> _selectPhoto() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -154,10 +138,6 @@ class _NotePageState extends State<NotePage> {
 
 
  // =====================
- //
- //  ===========================
- //
- //  ============================
 
   // Future<void> _selectPhoto() async {
   //   final picker = ImagePicker();
@@ -396,11 +376,6 @@ class _NotePageState extends State<NotePage> {
                       notesData['id'], "${notesData['note']}",
                       "${notesData['title']}"));
 
-                  //   Navigator.of(context).pushReplacement(
-                  //       MaterialPageRoute(builder: (context) =>
-                  //           NoteContainer.Details(
-                  //               notesData['id'], "${notesData['note']}",
-                  //               "${notesData['title']}")));
                 },
 
                 onLongPress: () {
@@ -410,7 +385,7 @@ class _NotePageState extends State<NotePage> {
                         return AlertDialog(
                           title: const Center(
                             child: Text(
-                              "Delete This Note ?",
+                              "هل تريد حذف هذة المفكرة؟",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -425,7 +400,7 @@ class _NotePageState extends State<NotePage> {
                                 // Navigator.of(context).pop();
                               },
                               child: const Text(
-                                "Cancel",
+                                "تراجع",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -438,17 +413,16 @@ class _NotePageState extends State<NotePage> {
                               onPressed: () async {
                                await deleteNoteAndMoveToTrash(sqlDataBase,notesData['id']);
 
-                                // dynamic deletres = await sqlDataBase.deletData(
-                                //     sqlQuery.deletData(notesData['id']));
                                 setState(() {
                                   _refreshData();
-                                  print("***********setstate after delet **********");
-                                  Get.back();
-                                  // Navigator.of(context).pop();
+                                  print("***********setstate after mynote delet **********");
+                                  Get.snackbar("تم حذف المفكرة بنجاح","");
+                                  // Get.back();
+                                  Navigator.of(context).pop();
                                 });
                               },
                               child: const Text(
-                                "ok",
+                                "موافق",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

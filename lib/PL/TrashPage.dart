@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../DL/SqlDb.dart';
 import '../DL/sqlCommand.dart';
 import 'NoteContainer.dart';
@@ -19,6 +21,9 @@ class _TrashPageState extends State<TrashPage> {
   ConstantSql sqlQuery = ConstantSql();
   SqlDb sqlDataBase = SqlDb();
   bool isloading = true;
+  bool _isvisibal =false;
+  final TextEditingController _searchController = TextEditingController();
+
 
   Future readData() async {
     List<Map<String, dynamic>> dataResponse = await sqlDataBase.readData(sqlQuery.selectAllTrash());
@@ -32,30 +37,279 @@ class _TrashPageState extends State<TrashPage> {
     }
   }
 
+  Future searchNote(str) async {
+    List<Map<String, dynamic>> searchResponse = await sqlDataBase.readData(
+        sqlQuery.searchTrashData(str));
+    setState(() {
+      storeData.addAll(searchResponse);
+      isloading = false;
+    });
+    if (mounted) {
+      setState(() {
+        print("setstate of search data is called");
+      });
+    }
+  }
+
+  @override
+  void _refreshData() {
+    setState(() {
+      print("setstate of refresh trash is called");
+      storeData = [];
+      readData();
+    });
+  }
+
+  void _searchRefresh(str) {
+    setState(() {
+      print("setstate of refresh is called");
+      storeData = [];
+      searchNote(str);
+    });
+  }
+
   @override
   void initState() {
-    print("initstate is called");
+    print("initstate trash is called");
     readData();
+    _loadPhoto();
     super.initState();
+  }
+
+  File? _selectedPhoto;
+
+  Future<void> _selectPhoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final Directory appDir = await getApplicationDocumentsDirectory();
+      final String path = appDir.path;
+      final File newImage = await File(pickedFile.path).copy('$path/user_profile.jpg');
+
+      setState(() {
+        _selectedPhoto = newImage;
+      });
+
+      // Save the path to shared_preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_profile', newImage.path);
+    }
+    _loadPhoto();
+  }
+
+  Future<void> _loadPhoto() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? photoPath = prefs.getString('user_profile');
+    if (photoPath != null) {
+      setState(() {
+        _selectedPhoto = File(photoPath);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    String _str ="";
+
     return  Scaffold(
-      drawer:const Drawer(
-        child: Text("trash")
-      ),
+      drawer:Drawer(
+    child: ListView(
+    padding: EdgeInsets.zero,
+      children: <Widget>[
+        UserAccountsDrawerHeader(
+          accountName: const Text("أحمد قحطان"),
+          accountEmail: const Text(" qahtan.dev@gmail.com"),
+          currentAccountPicture: InkWell(
+            onTap: () {
+              _selectPhoto();
+            },
+            child: CircleAvatar(
+              radius: 45,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: _selectedPhoto != null
+                      ? DecorationImage(
+                    fit: BoxFit.cover,
+                    image: FileImage(_selectedPhoto!),
+                  )
+                      : const DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/image/user.png"),
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(90.0)),
+                  border: Border.all(
+                    color: Colors.black12,
+                    width: 1,
+                  ),
+                ),
+                width: size.width*0.45,
+                height: size.height*0.21,
+              ),
+            ),
+          ),
+          decoration: const BoxDecoration(
+            color: Colors.redAccent,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                spreadRadius: 3,
+                blurRadius: 7,
+                offset: Offset(0, 3), // يغير مكان الظل
+              ),
+            ],
+          ),
+        ),
+
+        ListTile(
+          leading: const Icon(Icons.note),
+          title: const Text('كل الملاحظات'),
+          onTap: () {
+            // التنقل إلى شاشة كل الملاحظات
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.star),
+          title: const Text('المفضلة'),
+          onTap: () {
+            // التنقل إلى شاشة الملاحظات المفضلة
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.archive),
+          title: const Text('الأرشيف'),
+          onTap: () {
+            // التنقل إلى شاشة الأرشيف
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.delete),
+          title: const Text('سلة المحذوفات'),
+          onTap: () {
+            // التنقل إلى شاشة سلة المحذوفات
+            Get.to(const TrashPage());
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.category),
+          title: const Text('الفئات'),
+          onTap: () {
+            // التنقل إلى شاشة الفئات
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('الإعدادات'),
+          onTap: () {
+            // التنقل إلى شاشة الإعدادات
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.sync),
+          title: const Text('المزامنة'),
+          onTap: () {
+            // التنقل إلى شاشة المزامنة
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.info),
+          title: const Text('حول التطبيق'),
+          onTap: () {
+            // التنقل إلى شاشة حول التطبيق
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.help),
+          title: const Text('مساعدة'),
+          onTap: () {
+            // التنقل إلى شاشة المساعدة
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.rate_review),
+          title: const Text('التقييم والمراجعة'),
+          onTap: () {
+            // التنقل إلى صفحة التقييم والمراجعة في المتجر
+          },
+        ),
+      ],
+    ),
+    ),
 
       appBar: AppBar(
+        //*******************************************
         systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.redAccent,
             statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
-        actions: const [
-          Text("trash"),
+        actions: [
+          Visibility(
+            visible: _isvisibal,
+            child: Container(
+              width: size.width/1.8,
+              child: TextFormField(
+                controller: _searchController,
+                onChanged: (str) async{
+                  _str!=_searchController.text.toString();
+                  print("object===================$str");
+                  _searchRefresh(str);
+                },
+                autofocus: true,
+                maxLines: 1,
+                decoration: const InputDecoration(
+
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: !_isvisibal,
+            child: Text("سلة المحذوفات"),
+          ),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _isvisibal =!_isvisibal;
+                });
+                if(!_isvisibal){
+                  _searchController.clear();
+                  _refreshData();
+                }
+              },
+              highlightColor: Colors.redAccent,
+              splashColor: Colors.redAccent,
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+                size: 30,
+              )),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  Get.off(NoteContainer());
+                  // Navigator.of(context).pushReplacement(
+                  //     MaterialPageRoute(builder: (context) => NoteContainer()));
+                });
+              },
+              highlightColor: Colors.redAccent,
+              splashColor: Colors.redAccent,
+              icon: const Icon(
+                Icons.add_circle,
+                color: Colors.white,
+                size: 30,
+              )),
+          const SizedBox(
+            width: 20,
+          ),
         ],
       ),
+
       body: NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (OverscrollIndicatorNotification? overScroll){
             overScroll!.disallowIndicator();
@@ -87,64 +341,61 @@ class _TrashPageState extends State<TrashPage> {
                       "${notesData['title']}"));
                 },
 
-                // onLongPress: () {
-                //   showDialog(
-                //       context: context,
-                //       builder: (BuildContext) {
-                //         return AlertDialog(
-                //           title: const Center(
-                //             child: Text(
-                //               "Delete This Note ?",
-                //               style: TextStyle(
-                //                 fontSize: 16,
-                //                 fontWeight: FontWeight.bold,
-                //                 color: Colors.redAccent,
-                //               ),
-                //             ),
-                //           ),
-                //           actions: [
-                //             TextButton(
-                //               onPressed: () {
-                //                 Get.back();
-                //                 // Navigator.of(context).pop();
-                //               },
-                //               child: const Text(
-                //                 "Cancel",
-                //                 style: TextStyle(
-                //                   fontSize: 16,
-                //                   fontWeight: FontWeight.bold,
-                //                   color: Colors.redAccent,
-                //                 ),
-                //               ),
-                //             ),
-                //             const SizedBox(width: 10),
-                //             TextButton(
-                //               onPressed: () async {
-                //                 // await deleteNoteAndMoveToTrash(sqlDataBase,notesData['id']);
-                //
-                //                 // dynamic deletres = await sqlDataBase.deletData(
-                //                 //     sqlQuery.deletData(notesData['id']));
-                //                 setState(() {
-                //                   // _refreshData();
-                //                   print("***********setstate after delet **********");
-                //                   Get.snackbar("", "Note Delete Successful");
-                //                   Get.back();
-                //                   // Navigator.of(context).pop();
-                //                 });
-                //               },
-                //               child: const Text(
-                //                 "ok",
-                //                 style: TextStyle(
-                //                   fontSize: 16,
-                //                   fontWeight: FontWeight.bold,
-                //                   color: Colors.redAccent,
-                //                 ),
-                //               ),
-                //             ),
-                //            ],
-                //          );
-                //        });
-                // },
+                onLongPress: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext) {
+                        return AlertDialog(
+                          title: const Center(
+                            child: Text(
+                              "الحذف من سلة المحذوفات",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              child: const Text(
+                                "تراجع",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            TextButton(
+                              onPressed: () async {
+                                dynamic deletres = await sqlDataBase.deletData(
+                                    sqlQuery.deletTrashData(notesData['id']));
+                                setState(() {
+                                  Get.snackbar("تم حذف المفكرة بنجاح","");
+                                   _refreshData();
+                                  print("***********setstate after trash delet **********");
+                                  // Get.back();
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                              child: const Text(
+                                "موافق",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                           ],
+                         );
+                       });
+                },
                 child: Card(
                   child: ListTile(
                     title: Column(
