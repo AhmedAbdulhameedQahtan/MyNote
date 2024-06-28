@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 
+import 'TrashPage.dart';
+
 
 class NotePage extends StatefulWidget {
   const NotePage({super.key});
@@ -105,7 +107,6 @@ class _NotePageState extends State<NotePage> {
 
       setState(() {
         _selectedPhoto = newImage;
-        Get.snackbar("", "photo updated successful");
       });
 
       // Save the path to shared_preferences
@@ -116,8 +117,6 @@ class _NotePageState extends State<NotePage> {
     }
   }
 
-//  =====================
-
   Future<void> _loadPhoto() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? photoPath = prefs.getString('user_profile');
@@ -127,9 +126,39 @@ class _NotePageState extends State<NotePage> {
       });
     }
   }
-  // ===========================
 
-  // ============================
+  Future deleteNoteAndMoveToTrash(sqlDataBase,int noteId) async {
+    // Step 1: Select the note to be deleted
+    print("deleteNoteAndMoveToTrash is called===========");
+    dynamic selectToDelet = await sqlDataBase.readData(sqlQuery.selectToDelet(noteId));
+
+    // Check if the note exists
+    if (selectToDelet.isNotEmpty) {
+      Map<String, dynamic> note = selectToDelet.first;
+      print("SelectToDelet.first==============$selectToDelet.first");
+      String noteText = note['note'];
+      String titleText = note['title'];
+
+      // Step 2: Insert the selected note into the trash table using the moveToTrash function
+      dynamic insertToTrash = await sqlDataBase.insertData(sqlQuery.moveToTrash(noteId, noteText, titleText));
+
+      // Step 3: Delete the note from the mynotes table
+      dynamic deletFromNote = await sqlDataBase.deletData(
+          sqlQuery.deletData(noteId));
+      print("deletFromNote==========$deletFromNote");
+
+    } else {
+      print('Note with id $noteId does not exist.');
+    }
+  }
+
+
+ // =====================
+ //
+ //  ===========================
+ //
+ //  ============================
+
   // Future<void> _selectPhoto() async {
   //   final picker = ImagePicker();
   //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -222,6 +251,7 @@ class _NotePageState extends State<NotePage> {
               title: const Text('سلة المحذوفات'),
               onTap: () {
                 // التنقل إلى شاشة سلة المحذوفات
+                Get.to(const TrashPage());
               },
             ),
             const Divider(),
@@ -272,7 +302,7 @@ class _NotePageState extends State<NotePage> {
         ),
       ),
 
-        appBar: AppBar(
+      appBar: AppBar(
         //*******************************************
         systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.redAccent,
@@ -406,8 +436,10 @@ class _NotePageState extends State<NotePage> {
                             const SizedBox(width: 10),
                             TextButton(
                               onPressed: () async {
-                                dynamic deletres = await sqlDataBase.deletData(
-                                    sqlQuery.deletData(notesData['id']));
+                               await deleteNoteAndMoveToTrash(sqlDataBase,notesData['id']);
+
+                                // dynamic deletres = await sqlDataBase.deletData(
+                                //     sqlQuery.deletData(notesData['id']));
                                 setState(() {
                                   _refreshData();
                                   print("***********setstate after delet **********");

@@ -20,10 +20,24 @@ class ConstantSql{
   String selectAllData() {
     return "SELECT * FROM 'mynotes'";
   }
+  String selectAllTrash() {
+    return "SELECT * FROM 'trash'";
+  }
 
   String searchData(String data ) {
     String escapedData = data.replaceAll("'", "''");
     return "SELECT id,note,title FROM 'mynotes' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
   }
+
+  String moveToTrash(int id, String note, String title) {
+    String escapedNote = note.replaceAll("'", "''");
+    String escapedTitle = title.replaceAll("'", "''");
+    return "INSERT INTO trash (id, note, title) VALUES ($id, '$escapedNote', '$escapedTitle')";
+  }
+
+  String selectToDelet(int id) {
+    return "SELECT * FROM 'mynotes' WHERE id =$id";
+  }
+
 
 }

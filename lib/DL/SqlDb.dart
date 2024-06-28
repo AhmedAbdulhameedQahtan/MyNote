@@ -23,18 +23,51 @@ class SqlDb{
   }
 
   //انشاء الجداول والأعمدة
-  _onCreate(Database db,int version) async{
+  // _onCreate(Database db,int version) async{
+  //   await db.execute('''
+  //   CREATE TABLE "mynotes" (
+  //   'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  //   'note' TEXT NOT NULL,
+  //   'title' TEXT
+  //   )
+  //   ''');
+  //   print("DATABASE IS CREATED ====================================");
+  // }
+  //
+  _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE "mynotes" (
-    'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    'note' TEXT NOT NULL,
-    'title' TEXT 
+      'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      'note' TEXT NOT NULL,
+      'title' TEXT
     )
-    ''');
+  ''');
+
+    await db.execute('''
+    CREATE TABLE "trash" (
+      'id' INTEGER NOT NULL PRIMARY KEY,
+      'note' TEXT NOT NULL,
+      'title' TEXT,
+      'deleted_at' TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY('id') REFERENCES 'mynotes'('id') ON DELETE CASCADE
+    )
+  ''');
+
+    await db.execute('''
+    CREATE TABLE "favorite" (
+      'id' INTEGER NOT NULL PRIMARY KEY,
+      FOREIGN KEY('id') REFERENCES 'mynotes'('id') ON DELETE CASCADE
+    )
+  ''');
+
     print("DATABASE IS CREATED ====================================");
   }
 
-  //
+
+
+
+
+  //========================
   // _onUpgrade(Database db, int oldVersion, int newVersion) async{
   //   await
   //   print("DATABASE IS Upgraded ====================================");
@@ -48,6 +81,13 @@ class SqlDb{
     print("DATA IS READED ====================================$response");
     return response;
   }
+
+  selectToDelete(String sql)async{
+    Database? mydb = await myProjectData;
+    List<Map> noteToDelete = await mydb!.rawQuery(sql);
+    return noteToDelete;
+  }
+
 
 //الكتابة الى القاعدة
   insertData(String sql)async{
