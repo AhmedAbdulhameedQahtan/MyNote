@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mynote/PL/NoteContainer.dart';
 import 'package:mynote/PL/NotePage.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +11,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   @override
   Widget build(BuildContext context) {
     return  GetMaterialApp(
@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
          splashColor: Colors.redAccent,
          primaryColor: Colors.redAccent,
        ),
-       home:  const NotePage(),
+       home:const NotePage(),
 
     );
   }
