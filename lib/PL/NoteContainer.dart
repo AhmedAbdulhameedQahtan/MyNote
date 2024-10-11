@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:mynote/PL/NotePage.dart';
-import '../BL/DatabaseController.dart';
+import 'package:mynote/BL/DatabaseController.dart';
 
 class NoteContainer extends StatefulWidget {
   String? noteDetails;
@@ -19,13 +18,13 @@ class NoteContainer extends StatefulWidget {
 
 class _NoteContainerState extends State<NoteContainer> {
   // HomeController HomeControllerObject = Get.put(HomeController());
-  DatabaseController DatabaseControllerObject =Get.put(DatabaseController());
+  // DatabaseController DatabaseControllerObject =Get.put(DatabaseController());
 
 
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final int _maxlength = 30;
-  bool _check = false;
+  // bool _check = false;
   // SqlDb sqlDataBase = SqlDb();
   // ConstantSql sqlQuery = ConstantSql();
 
@@ -34,7 +33,7 @@ class _NoteContainerState extends State<NoteContainer> {
     if (widget.noteDetails != null) {
       _noteController.text = widget.noteDetails!;
       _titleController.text = widget.titleDetails!;
-      _check = true;
+      // _check = true;
     }
     super.initState();
   }
@@ -50,82 +49,85 @@ class _NoteContainerState extends State<NoteContainer> {
             statusBarBrightness: Brightness.light),
         backgroundColor: Colors.redAccent,
         actions: [
-          IconButton(
-              onPressed: () async {
-                if (_noteController.text == "") {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext) {
-                        return AlertDialog(
-                          title: const Center(
-                            child: Text(
-                              "Write Note Please ..",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Get.back();
-                                // Navigator.of(context).pop();
-                              },
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.redAccent,
+          GetBuilder<DatabaseController>(
+              builder: (controller)=>IconButton(
+                  onPressed: () async {
+                    if (_noteController.text == "") {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext) {
+                            return AlertDialog(
+                              title: const Center(
+                                child: Text(
+                                  "Write Note Please ..",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.redAccent,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      });
-                } else {
-                  print("======================$_check");
-                  if (_check == true) {
-                    dynamic res = await DatabaseControllerObject.sqlDataBase.updateData(
-                        DatabaseControllerObject.sqlQuery.updateData(
-                            id!,
-                            _noteController.text.toString(),
-                            _titleController.text.toString()));
-                    setState(() {
-                      _check = false;
-                      print("save set state is call");
-                      print("======================$_check");
-                      _noteController.text = "";
-                      _titleController.text = "";
-                      // Navigator.of(context).pop();
-                      DatabaseControllerObject.refreshData();
-                      Get.off(const NotePage());
-                    });
-                  } else {
-                    dynamic res = await DatabaseControllerObject.sqlDataBase.insertData(
-                        DatabaseControllerObject.sqlQuery.insertData(_noteController.text.toString(),
-                            _titleController.text.toString()));
-                    setState(() {
-                      print("save set state is call");
-                      print("======================$_check");
-                      _noteController.text = "";
-                      _titleController.text = "";
-                      // Navigator.of(context).pop();
-                      
-                      DatabaseControllerObject.refreshData();
-                      Get.off(const NotePage());
-                    });
-                  }
-                }
-              },
-              highlightColor: Colors.redAccent,
-              splashColor: Colors.redAccent,
-              icon: const Icon(
-                Icons.save_alt_sharp,
-                size: 30,
-              )),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Get.back();
+                                    // Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    "ok",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.redAccent,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    } else {
+
+                      // print("======================$_check");
+                      if ( widget.noteDetails != null) {
+                        dynamic res = await controller.sqlDataBase.updateData(
+                            controller.sqlQuery.updateData(id!, _noteController.text.toString(), _titleController.text.toString()));
+                        // setState(() {
+                        //   _check = false;
+                          print("save set state is call");
+                          _noteController.text = "";
+                          _titleController.text = "";
+                          controller.refreshData();
+                          Get.back();
+                          // Get.off(const NotePage());
+                        // });
+
+                      } else {
+                        dynamic res = await controller.sqlDataBase.insertData(
+                            controller.sqlQuery.insertData(_noteController.text.toString(),
+                                _titleController.text.toString()));
+                        // setState(() {
+                          print("save set state is call");
+                          // print("======================$_check");
+                          _noteController.text = "";
+                          _titleController.text = "";
+                          // Navigator.of(context).pop();
+
+                          controller.refreshData();
+                          Get.back();
+                          // Get.off(const NotePage());
+                        // });
+                      }
+                    }
+                  },
+                  highlightColor: Colors.redAccent,
+                  splashColor: Colors.redAccent,
+                  icon: const Icon(
+                    Icons.save_alt_sharp,
+                    color: Colors.white,
+                    size: 30,
+                  )),
+          ),
+
           const SizedBox(
             width: 30,
           ),
@@ -164,11 +166,11 @@ class _NoteContainerState extends State<NoteContainer> {
     );
   }
 
-  @override
-  void dispose() {
-    print("save dispose is call");
-    _noteController.dispose();
-    _titleController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   print("save dispose is call");
+  //   _noteController.dispose();
+  //   _titleController.dispose();
+  //   super.dispose();
+  // }
 }

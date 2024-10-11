@@ -11,7 +11,7 @@ class MyDrawerController extends GetxController {
   void onInit() {
     super.onInit();
     loadImage();
-    print("controller onInit HomeController****************");
+    print("controller onInit Drawer ****************");
   }
 
   Future<void> loadImage() async {

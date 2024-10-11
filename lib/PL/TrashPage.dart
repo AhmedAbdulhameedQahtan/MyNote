@@ -16,13 +16,9 @@ class TrashPage extends StatefulWidget {
 }
 
 class _TrashPageState extends State<TrashPage> {
-  DatabaseController DatabaseControllerObject = Get.put(DatabaseController());
-  TrashController TrashControllerObject = Get.put(TrashController());
-  AppBarController AppBarControllerObject = Get.put(AppBarController());
 
   @override
   void initState() {
-    print("initstate trash is called");
     super.initState();
   }
 
@@ -35,9 +31,10 @@ class _TrashPageState extends State<TrashPage> {
 
       appBar: appBarWidget(size, 'TrashPage'),
 
+      // body: bodyContainer(size),
       body: NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (OverscrollIndicatorNotification? overScroll) {
-            overScroll!.disallowIndicator();
+            // overScroll!.disallowIndicator();
             return true;
           },
           child: bodyContainer(size)),
@@ -49,7 +46,7 @@ class _TrashPageState extends State<TrashPage> {
       width: size.width,
       height: size.height,
       child: GetBuilder<TrashController>(
-          init: TrashController(),
+          // init: TrashController(),
           builder: (controller) => ListView(
                 children: [
                   ListView.builder(
@@ -100,24 +97,13 @@ class _TrashPageState extends State<TrashPage> {
                                     TextButton(
                                       onPressed: () async {
                                         dynamic deletres =
-                                            await DatabaseControllerObject
-                                                .sqlDataBase
-                                                .deletData(
-                                                    DatabaseControllerObject
-                                                        .sqlQuery
-                                                        .deletTrashData(
-                                                            notesData['id']));
-                                        setState(() {
-                                          Get.snackbar(
-                                              "تم حذف المفكرة بنجاح", "");
-                                          TrashControllerObject
-                                              .refreshDeletedData();
-                                          print(
-                                              "***********setstate after trash delet **********");
+                                            await controller.sqlDataBase.deletData(controller.sqlQuery.deletTrashData(notesData['id']));
+                                        Get.snackbar("تم حذف المفكرة بنجاح", "");
+                                        // setState(() {
+                                          controller.refreshDeletedData();
                                           // Get.back();
-
-                                          Navigator.of(context).pop();
-                                        });
+                                          // Navigator.of(context).pop();
+                                        // });
                                       },
                                       child: const Text(
                                         "موافق",

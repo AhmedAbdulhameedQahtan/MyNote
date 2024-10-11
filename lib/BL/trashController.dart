@@ -10,7 +10,6 @@ class TrashController extends GetxController{
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     readDeletedData();
     print("========================Trash Controller onInit called====================");

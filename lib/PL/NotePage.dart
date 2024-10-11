@@ -13,7 +13,7 @@ class NotePage extends StatefulWidget {
 }
 
 class _NotePageState extends State<NotePage> {
-  DatabaseController DatabaseControllerObject =Get.put(DatabaseController());
+  // DatabaseController DatabaseControllerObject =Get.put(DatabaseController());
 
   @override
   void initState() {
@@ -26,27 +26,29 @@ class _NotePageState extends State<NotePage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       drawer: drawerWidget(size),
+
       appBar: appBarWidget(size,'NotePage'),
+
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (OverscrollIndicatorNotification? overScroll) {
-          overScroll!.disallowIndicator();
+           // overScroll!.disallowIndicator();
           return true;
         },
         child: GetBuilder<DatabaseController>(
-          init: DatabaseController(),
+          // init: DatabaseController(),
           builder: (controller) => Container(
             width: size.width,
             height: size.height,
             child: ListView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+               // physics:  NeverScrollableScrollPhysics(),
               itemCount: controller.storeData.length,
               itemBuilder: (context, index) {
-                final Map<String, dynamic> notesData =
-                    controller.storeData[index];
+                final Map<String, dynamic> notesData = controller.storeData[index];
                 // print("the storeData index ===========${controller.storeData[index]}");
                 return InkWell(
                   onTap: () {
+                    // عاد مش جاهز
                     Get.to(NoteContainer.Details(notesData['id'],
                         "${notesData['note']}", "${notesData['title']}"));
                   },

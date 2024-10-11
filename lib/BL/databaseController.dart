@@ -12,10 +12,9 @@ class DatabaseController extends GetxController{
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     readData();
-    print("dataread===================================================================0000000");
+    print("dataread========================database controller===========================================");
 }
 
 

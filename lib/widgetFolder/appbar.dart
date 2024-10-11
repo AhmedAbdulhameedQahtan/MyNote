@@ -5,12 +5,12 @@ import 'package:mynote/BL/appbarController.dart';
 import '../BL/DatabaseController.dart';
 import '../BL/trashController.dart';
 import '../PL/NoteContainer.dart';
+import '../myBinding/myBinding.dart';
 
 AppBar appBarWidget(Size size, String pageName) {
   final TextEditingController searchController = TextEditingController();
 
   return AppBar(
-
     systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Colors.redAccent,
         statusBarBrightness: Brightness.light),
@@ -20,7 +20,7 @@ AppBar appBarWidget(Size size, String pageName) {
     ),
     actions: [
       GetBuilder<AppBarController>(
-        init: AppBarController(),
+        // init: AppBarController(),
         builder: pageName == 'NotePage'
             ? (controller) =>
             Visibility(
@@ -126,7 +126,7 @@ AppBar appBarWidget(Size size, String pageName) {
       if(pageName!='TrashPage')
       IconButton(
           onPressed: () {
-            Get.to(NoteContainer());
+            Get.to(()=> NoteContainer());
           },
           highlightColor: Colors.redAccent,
           splashColor: Colors.redAccent,

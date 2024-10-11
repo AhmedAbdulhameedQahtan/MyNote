@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mynote/PL/NotePage.dart';
+import 'package:mynote/myBinding/myBinding.dart';
 import '../BL/drawerController.dart';
 import '../PL/TrashPage.dart';
 
@@ -16,7 +18,7 @@ Drawer drawerWidget(Size size){
           accountName: const Text("أحمد قحطان"),
           accountEmail: const Text(" qahtan.dev@gmail.com"),
           currentAccountPicture: GetBuilder<MyDrawerController>(
-            init: MyDrawerController(),
+            // init: MyDrawerController(),
             builder: (controller)=>InkWell(
               onTap: () {
                 controller.pickImage(ImageSource.gallery);
@@ -61,93 +63,83 @@ Drawer drawerWidget(Size size){
             ],
           ),
         ),
+
         ListTile(
           leading: const Icon(Icons.note),
           title: const Text('كل الملاحظات'),
           onTap: () {
-            // Get.off(const NotePage());
+             Get.off(()=>const NotePage());
           },
-        ),
-        // ListTile(
-        //   title: Text('English'),
-        //   onTap: () {
-        //     setLocale(Locale('en'));
-        //     Navigator.of(context).pop();
-        //   },
-        // ),
-        // ListTile(
-        //   title: Text('العربية'),
-        //   onTap: () {
-        //     setLocale(Locale('ar'));
-        //     Navigator.of(context).pop();
-        //   },
-        // ),
+        ),  // كل الملاحظات
+
         ListTile(
           leading: const Icon(Icons.star),
           title: const Text('المفضلة'),
           onTap: () {
             // التنقل إلى شاشة الملاحظات المفضلة
           },
-        ),
+        ),//المفظلة
+
         ListTile(
           leading: const Icon(Icons.archive),
           title: const Text('الأرشيف'),
           onTap: () {
             // التنقل إلى شاشة الأرشيف
           },
-        ),
+        ),//الارشيف
+
         ListTile(
           leading: const Icon(Icons.delete),
           title: const Text('سلة المحذوفات'),
           onTap: () {
             // التنقل إلى شاشة سلة المحذوفات
-            Get.to(const TrashPage());
+            Get.to(const TrashPage(),binding: MyTrashBinding());
           },
-        ),
+        ),// سله المحذوفات
+
         const Divider(),
+
         ListTile(
           leading: const Icon(Icons.category),
           title: const Text('الفئات'),
           onTap: () {
             // التنقل إلى شاشة الفئات
           },
-        ),
+        ),//الفئات
+
         ListTile(
           leading: const Icon(Icons.settings),
           title: const Text('الإعدادات'),
           onTap: () {
             // التنقل إلى شاشة الإعدادات
           },
-        ),
+        ),//الاعدادات
+
         ListTile(
           leading: const Icon(Icons.sync),
           title: const Text('المزامنة'),
           onTap: () {
             // التنقل إلى شاشة المزامنة
           },
-        ),
+        ),//المزامنه
+
         const Divider(),
+
         ListTile(
           leading: const Icon(Icons.info),
           title: const Text('حول التطبيق'),
           onTap: () {
             // التنقل إلى شاشة حول التطبيق
           },
-        ),
-        ListTile(
-          leading: const Icon(Icons.help),
-          title: const Text('مساعدة'),
-          onTap: () {
-            // التنقل إلى شاشة المساعدة
-          },
-        ),
+        ), //حول التطبيق
+
         ListTile(
           leading: const Icon(Icons.rate_review),
           title: const Text('التقييم والمراجعة'),
           onTap: () {
             // التنقل إلى صفحة التقييم والمراجعة في المتجر
           },
-        ),
+        ),//التقيم
       
       ],
     ),
