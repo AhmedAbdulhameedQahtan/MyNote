@@ -1,2 +1,3 @@
 # MyNote
- Flutter Application
+ Flutter Application 
+ MVC pattern , Sqlite database , Getx State Management 
