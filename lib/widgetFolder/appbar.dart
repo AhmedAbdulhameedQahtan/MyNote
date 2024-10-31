@@ -1,143 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:mynote/BL/appbarController.dart';
-import '../BL/DatabaseController.dart';
-import '../BL/trashController.dart';
-import '../PL/NoteContainer.dart';
-import '../myBinding/myBinding.dart';
+import 'package:mynote/controllers/notePageController.dart';
+import 'package:mynote/resources/appSize.dart';
+import '../controllers/FavoriteController.dart';
+import '../controllers/appbarController.dart';
+import '../controllers/trashController.dart';
+import '../resources/appColors.dart';
+import '../view/AddNotePage.dart';
 
 AppBar appBarWidget(Size size, String pageName) {
   final TextEditingController searchController = TextEditingController();
 
+  final AppBarController APcontroller = Get.find();
+
   return AppBar(
-    systemOverlayStyle: const SystemUiOverlayStyle(
-        statusBarColor: Colors.redAccent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: AppColors.primaryColor,
         statusBarBrightness: Brightness.light),
-    backgroundColor: Colors.redAccent,
-    iconTheme:const IconThemeData(
-      color: Colors.white,
+    backgroundColor: AppColors.primaryColor,
+    iconTheme: IconThemeData(
+      color: AppColors.white,
     ),
     actions: [
-      GetBuilder<AppBarController>(
-        // init: AppBarController(),
-        builder: pageName == 'NotePage'
-            ? (controller) =>
-            Visibility(
-              visible: controller.isvisibal,
-              child: Container(
-                width: size.width / 1.8,
-                child: GetBuilder<DatabaseController>(
-                  builder: (controller) =>
-                      TextFormField(
-                        controller: searchController,
-                        onChanged: (str) async {
-                          str != searchController.text.toString();
-                          print("object===================$str");
-                          controller.searchRefresh(str);
-                        },
-                        autofocus: true,
-                        maxLines: 1,
-                        decoration: const InputDecoration(
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                        ),
-                      ),
+      Obx(() {
+        return APcontroller.isVisible.value
+            ? Visibility(
+                visible: APcontroller.isVisible.value,
+                child: SizedBox(
+                  width: size.width * AppSize.size226,
+                  child: TextFormField(
+                    controller: searchController,
+                    onChanged: (str) async {
+                      str != searchController.text.toString();
+                      switch (pageName) {
+                        case 'NotePage':
+                          Get.find<NotePageController>().searchRefresh(str);
+                        case 'TrashPage':
+                          Get.find<TrashController>().searchDeletedRefresh(str);
+                        case 'FavoritePage':
+                          Get.find<FavoriteController>()
+                              .searchFavoriteRefresh(str);
+                      }
+                    },
+                    autofocus: true,
+                    maxLines: 1,
+                    textDirection: TextDirection.rtl,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.white)),
+                    ),
+                  ),
                 ),
-              ),
-            )
-            : (controller) =>
-            Visibility(
-              visible: controller.trashIsvisibal,
-              child: Container(
-                width: size.width / 1.8,
-                child: GetBuilder<TrashController>(
-                  builder: (controller) =>
-                      TextFormField(
-                        controller: searchController,
-                        onChanged: (str) async {
-                          str != searchController.text.toString();
-                          print("object===================$str");
-                          controller.searchDeletedRefresh(str);
-                        },
-                        autofocus: true,
-                        maxLines: 1,
-                        decoration: const InputDecoration(
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                        ),
+              ) //search text form
+            : Visibility(
+                visible: !APcontroller.isVisible.value,
+                child: switch (pageName) {
+                  'NotePage' => Text(
+                      "المفكرات",
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
                       ),
-                ),
-              ),
-            ),
-      ),
-      // Text("app_title".tr(context)),
-      if(pageName=='TrashPage')
-      GetBuilder<AppBarController>(
-        builder: (controller) => Visibility(
-              visible: !controller.trashIsvisibal,
-              child: Text("سلة المحذوفات"),
-            )
-
-      ),
-
-
-      GetBuilder<AppBarController>(
-        builder: pageName == 'NotePage' ?
-            (controller) =>
-            IconButton(
-                onPressed: () {
-                  controller.isVisibalState();
-                  if (!controller.isvisibal) {
-                    searchController.clear();
-                    print(
-                        "***************************888888888888888888888888888888888888888++++++++++++");
-                    // HomeControllerObject.refreshData();
-                  }
-                },
-                highlightColor: Colors.redAccent,
-                splashColor: Colors.redAccent,
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                  size: 30,
-                )) :
-            (controller) =>
-            IconButton(
-                onPressed: () {
-                  controller.trashIsVisibalState();
-                  if (!controller.trashIsvisibal) {
-                    searchController.clear();
-                    print(
-                        "***************************888888888888888888888888888888888888888++++++++++++");
-                    // HomeControllerObject.refreshData();
-                  }
-                },
-                highlightColor: Colors.redAccent,
-                splashColor: Colors.redAccent,
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                  size: 30,
-                )),
-      ),
-
-
-      if(pageName!='TrashPage')
-      IconButton(
-          onPressed: () {
-            Get.to(()=> NoteContainer());
-          },
-          highlightColor: Colors.redAccent,
-          splashColor: Colors.redAccent,
-          icon: const Icon(
-            Icons.add_circle,
-            color: Colors.white,
-            size: 30,
-          )),
+                    ),
+                  'TrashPage' => Text(
+                      " المحذوفات",
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  'FavoritePage' => Text(
+                      "المفضلات",
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  // TODO: Handle this case.
+                  String() => throw UnimplementedError(),
+                }); // page title
+      }),
 
       const SizedBox(
-        width: 15,
+        width: AppSize.size15,
+      ),
+
+      //Search Icon
+      IconButton(
+        onPressed: () {
+          APcontroller.toggleVisibility();
+          if (!APcontroller.isVisible.value) {
+            searchController.clear();
+          }
+        },
+        icon: Icon(
+          Icons.search,
+          color: AppColors.white,
+          size: AppSize.size30,
+        ),
+        highlightColor: AppColors.primaryColor,
+        splashColor: AppColors.primaryColor,
+      ),
+
+      if (pageName != 'TrashPage')
+        //add note icon
+        IconButton(
+            onPressed: () {
+              Get.to(() => AddNotePage());
+            },
+            highlightColor: AppColors.primaryColor,
+            splashColor: AppColors.primaryColor,
+            icon: Icon(
+              Icons.add_circle,
+              color: AppColors.white,
+              size:  AppSize.size30,
+            )),
+
+      const SizedBox(
+        width:AppSize.size15,
       ),
     ],
   );

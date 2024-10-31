@@ -12,6 +12,10 @@ class ConstantSql{
     return "UPDATE mynotes SET note = '$escapedNote', title = '$escapedTitle' WHERE id = $id";
   }
 
+  String updateFavorite(int id ,int favorite) {
+    return "UPDATE mynotes SET is_favorite = '$favorite' WHERE id = $id";
+  }
+
 
   String deletData(int noteId) {
     return "DELETE FROM 'mynotes' WHERE id ='$noteId' ";
@@ -28,14 +32,27 @@ class ConstantSql{
     return "SELECT * FROM 'trash'";
   }
 
+  String selectAllFavorites() {
+    return "SELECT * FROM 'mynotes' WHERE is_favorite !='0'";
+  }
+
+  String selectOneFavorites(int noteId) {
+    return "SELECT is_favorite FROM 'mynotes' WHERE id ='$noteId'";
+  }
+
   String searchData(String data ) {
     String escapedData = data.replaceAll("'", "''");
-    return "SELECT id,note,title FROM 'mynotes' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
+    return "SELECT * FROM 'mynotes' WHERE( title LIKE '%$escapedData%' or note LIKE '%$escapedData%')";
+  }
+
+  String searchFavoriteData(String data ) {
+    String escapedData = data.replaceAll("'", "''");
+    return "SELECT id,note,title FROM 'mynotes' WHERE( title LIKE '%$escapedData%' or note LIKE '%$escapedData%') and is_favorite !='0'";
   }
 
   String searchTrashData(String data ) {
     String escapedData = data.replaceAll("'", "''");
-    return "SELECT id,note,title FROM 'trash' WHERE title LIKE '%$escapedData%' or note LIKE '%$escapedData%'";
+    return "SELECT id,note,title FROM 'trash' WHERE (title LIKE '%$escapedData%' or note LIKE '%$escapedData%')";
   }
 
   String moveToTrash(int id, String note, String title) {

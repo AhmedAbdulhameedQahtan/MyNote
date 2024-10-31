@@ -1,22 +1,41 @@
 import 'package:get/get.dart';
-import '../BL/DatabaseController.dart';
-import '../BL/appbarController.dart';
-import '../BL/drawerController.dart';
-import '../BL/trashController.dart';
+import 'package:mynote/controllers/notePageController.dart';
+import '../controllers/FavoriteController.dart';
+import '../controllers/appbarController.dart';
+import '../controllers/drawerController.dart';
+import '../controllers/trashController.dart';
+
 
 class MainBinding implements Bindings{
 
   @override
   void dependencies() {
+    Get.put(NotePageController());
     Get.put(AppBarController());
-    Get.lazyPut(()=>DatabaseController());
     Get.lazyPut(()=>MyDrawerController(),fenix: true);
   }
+
+}
+
+class AppBarBinding implements Bindings{
+
+  @override
+  void dependencies() {
+    Get.put(AppBarController());
+  }
+
 }
 
 class MyTrashBinding implements Bindings{
   @override
   void dependencies() {
-    Get.put(TrashController());
+     Get.put(TrashController());
+  }
+}
+
+class MyFavoriteBinding implements Bindings{
+  @override
+  void dependencies() {
+    Get.put(FavoriteController());
   }
 }

@@ -1,69 +1,50 @@
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import '../DL/SqlDb.dart';
-import '../DL/sqlCommand.dart';
 
-class DatabaseController extends GetxController{
+import '../model/SqlDb.dart';
+import '../model/sqlCommand.dart';
+
+
+class NotePageController extends GetxController{
 
   ConstantSql sqlQuery = ConstantSql();
   SqlDb sqlDataBase = SqlDb();
   bool isloading = true;
-  List storeData = [];
+  RxList<Map<String, dynamic>> storeData = <Map<String, dynamic>>[].obs;
 
+  RxInt favNote = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
     readData();
-    print("dataread========================database controller===========================================");
+    print("========================database controller onInit ====================================");
 }
-
-
 
 Future readData() async {
   List<Map<String, dynamic>> dataResponse = await sqlDataBase.readData(sqlQuery.selectAllData());
-  storeData.addAll(dataResponse);
-  print("controller read data**************** ${storeData}");
+  storeData.assignAll(dataResponse);
+  print(" **************** database controller read data ****************");
   isloading = false;
-  // if (mounted) {
-  //   setState(() {
-  //     print("setstate of read data is called");
-  //   });
-  // }
-  update();
 }
 
 Future searchNote(str) async {
-  List<Map<String, dynamic>> searchResponse = await sqlDataBase.readData(
-      sqlQuery.searchData(str));
-  // setState(() {
-  storeData.addAll(searchResponse);
+  List<Map<String, dynamic>> searchResponse = await sqlDataBase.readData(sqlQuery.searchData(str));
+  storeData.assignAll(searchResponse);
   isloading = false;
-  print("controller search list**************** ${storeData}");
-  // });
-  // if (mounted) {
-  //   setState(() {
-  //     print("setstate of search data is called");
-  //   });
-  // }
-  update();
+  print("controller search list**************** ");
 }
 
 void searchRefresh(str) {
-  // setState(() {
   print("controller of search refresh is called");
-  storeData = [];
+   storeData.clear();
   searchNote(str);
-  // });
-  update();
 }
 
 void refreshData() {
-  // setState(() {
   print("controller of refresh is called");
-  storeData = [];
+  storeData.clear();
   readData();
-  // });
-  update();
 }
 
 Future deleteNoteAndMoveToTrash(sqlDataBase,int noteId) async {
@@ -91,6 +72,14 @@ Future deleteNoteAndMoveToTrash(sqlDataBase,int noteId) async {
     }
   }
 
+void favNoteState(int noteId)async{
 
+   dynamic selectToFavorite = await sqlDataBase.readData(sqlQuery.selectOneFavorites(noteId));
+   selectToFavorite[0]['is_favorite'] == 0 ? favNote.value = 1 : favNote.value = 0;
+    dynamic res = await sqlDataBase.updateData(sqlQuery.updateFavorite(noteId,favNote.value));
+    refreshData();
+   print('favnote===========$favNote');
+     // update();
+}
 
 }

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mynote/PL/NotePage.dart';
 import 'package:mynote/myBinding/myBinding.dart';
-import '../BL/drawerController.dart';
-import '../PL/TrashPage.dart';
+
+import '../controllers/drawerController.dart';
+import '../view/FavoraitePage.dart';
+import '../view/NotePage.dart';
+import '../view/TrashPage.dart';
+
 
 Drawer drawerWidget(Size size){
 
@@ -68,7 +71,7 @@ Drawer drawerWidget(Size size){
           leading: const Icon(Icons.note),
           title: const Text('كل الملاحظات'),
           onTap: () {
-             Get.off(()=>const NotePage());
+             Get.to(()=>const NotePage());
           },
         ),  // كل الملاحظات
 
@@ -77,6 +80,8 @@ Drawer drawerWidget(Size size){
           title: const Text('المفضلة'),
           onTap: () {
             // التنقل إلى شاشة الملاحظات المفضلة
+            Get.to(()=> FavoritePage(),binding: MyFavoriteBinding());
+
           },
         ),//المفظلة
 
@@ -93,7 +98,7 @@ Drawer drawerWidget(Size size){
           title: const Text('سلة المحذوفات'),
           onTap: () {
             // التنقل إلى شاشة سلة المحذوفات
-            Get.to(const TrashPage(),binding: MyTrashBinding());
+            Get.to(()=>const TrashPage(),binding: MyTrashBinding());
           },
         ),// سله المحذوفات
 

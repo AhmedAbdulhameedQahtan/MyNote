@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mynote/PL/NoteContainer.dart';
-import 'package:mynote/PL/NotePage.dart';
 import 'package:get/get.dart';
-import 'package:mynote/PL/TrashPage.dart';
 import 'package:mynote/myBinding/myBinding.dart';
+import 'package:mynote/resources/appColors.dart';
+import 'AddNotePage.dart';
+import 'NotePage.dart';
+import 'TrashPage.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -21,15 +22,18 @@ class _MyAppState extends State<MyApp> {
 
       debugShowCheckedModeBanner: false,
        theme: ThemeData(
-         splashColor: Colors.redAccent,
-         primaryColor: Colors.redAccent,
+         splashColor: AppColors.primaryColor,
+         primaryColor: AppColors.primaryColor,
+         useMaterial3: true,
        ),
-      initialBinding: MainBinding(),
+      // initialBinding: MainBinding(),
+      initialRoute: "/",
       getPages: [
-        GetPage(name: '/', page:()=>const NotePage()),
-        GetPage(name: '/NoteContainer', page:()=> NoteContainer()),
+        GetPage(name: '/', page:()=>const NotePage() , binding: MainBinding()),
+        GetPage(name: '/NoteContainer', page:()=> AddNotePage()),
         GetPage(name: '/TrashPage', page:()=>const TrashPage()),
       ],
+
 
     );
   }

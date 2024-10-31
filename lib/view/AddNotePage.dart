@@ -1,39 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:mynote/BL/DatabaseController.dart';
+import 'package:mynote/controllers/notePageController.dart';
 
-class NoteContainer extends StatefulWidget {
+import '../resources/appColors.dart';
+
+
+class AddNotePage extends StatefulWidget {
   String? noteDetails;
   String? titleDetails;
   int? idDetails;
 
-  NoteContainer({super.key, this.noteDetails, this.titleDetails});
+  AddNotePage({super.key, this.noteDetails, this.titleDetails});
 
-  NoteContainer.Details(this.idDetails, this.noteDetails, this.titleDetails);
+  AddNotePage.Details(this.idDetails, this.noteDetails, this.titleDetails);
 
   @override
-  _NoteContainerState createState() => _NoteContainerState();
+  _AddNotePageState createState() => _AddNotePageState();
 }
 
-class _NoteContainerState extends State<NoteContainer> {
-  // HomeController HomeControllerObject = Get.put(HomeController());
-  // DatabaseController DatabaseControllerObject =Get.put(DatabaseController());
-
+class _AddNotePageState extends State<AddNotePage> {
 
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final int _maxlength = 30;
-  // bool _check = false;
-  // SqlDb sqlDataBase = SqlDb();
-  // ConstantSql sqlQuery = ConstantSql();
 
   @override
   void initState() {
     if (widget.noteDetails != null) {
       _noteController.text = widget.noteDetails!;
       _titleController.text = widget.titleDetails!;
-      // _check = true;
     }
     super.initState();
   }
@@ -44,12 +40,13 @@ class _NoteContainerState extends State<NoteContainer> {
     int? id = widget.idDetails;
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.redAccent,
+        systemOverlayStyle:  SystemUiOverlayStyle(
+            statusBarColor:AppColors.primaryColor,
             statusBarBrightness: Brightness.light),
-        backgroundColor: Colors.redAccent,
+        iconTheme: IconThemeData(color: AppColors.white),
+        backgroundColor: AppColors.primaryColor,
         actions: [
-          GetBuilder<DatabaseController>(
+          GetBuilder<NotePageController>(
               builder: (controller)=>IconButton(
                   onPressed: () async {
                     if (_noteController.text == "") {
@@ -57,13 +54,13 @@ class _NoteContainerState extends State<NoteContainer> {
                           context: context,
                           builder: (BuildContext) {
                             return AlertDialog(
-                              title: const Center(
+                              title:  Center(
                                 child: Text(
-                                  "Write Note Please ..",
+                                  "قم بكتابه مفكره من اجل الحفظ",
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.redAccent,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                               ),
@@ -71,14 +68,13 @@ class _NoteContainerState extends State<NoteContainer> {
                                 TextButton(
                                   onPressed: () {
                                     Get.back();
-                                    // Navigator.of(context).pop();
                                   },
-                                  child: const Text(
-                                    "ok",
+                                  child:  Text(
+                                    "موافق",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.redAccent,
+                                      color: AppColors.primaryColor,
                                     ),
                                   ),
                                 ),
@@ -89,41 +85,30 @@ class _NoteContainerState extends State<NoteContainer> {
 
                       // print("======================$_check");
                       if ( widget.noteDetails != null) {
-                        dynamic res = await controller.sqlDataBase.updateData(
-                            controller.sqlQuery.updateData(id!, _noteController.text.toString(), _titleController.text.toString()));
-                        // setState(() {
-                        //   _check = false;
-                          print("save set state is call");
+                        dynamic res = await controller.sqlDataBase.updateData(controller.sqlQuery.updateData(id!, _noteController.text.toString(), _titleController.text.toString()));
+                          print("save is done update");
                           _noteController.text = "";
                           _titleController.text = "";
                           controller.refreshData();
                           Get.back();
-                          // Get.off(const NotePage());
-                        // });
 
                       } else {
                         dynamic res = await controller.sqlDataBase.insertData(
                             controller.sqlQuery.insertData(_noteController.text.toString(),
                                 _titleController.text.toString()));
-                        // setState(() {
-                          print("save set state is call");
-                          // print("======================$_check");
+                          print("save is done insert");
                           _noteController.text = "";
                           _titleController.text = "";
-                          // Navigator.of(context).pop();
-
                           controller.refreshData();
                           Get.back();
-                          // Get.off(const NotePage());
-                        // });
                       }
                     }
                   },
-                  highlightColor: Colors.redAccent,
-                  splashColor: Colors.redAccent,
-                  icon: const Icon(
+                  highlightColor: AppColors.primaryColor,
+                  splashColor: AppColors.primaryColor,
+                  icon:  Icon(
                     Icons.save_alt_sharp,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 30,
                   )),
           ),
@@ -141,22 +126,26 @@ class _NoteContainerState extends State<NoteContainer> {
             child: Column(
               children: [
                 TextFormField(
+                  textDirection: TextDirection.rtl,
                   maxLength: _maxlength,
                   controller: _titleController,
                   autofocus: false,
                   maxLines: 1,
-                  decoration: const InputDecoration(
-                    hintText: 'Title',
+                  decoration:  InputDecoration(
+                    hintTextDirection: TextDirection.rtl,
+                    hintText: 'العنوان',
                     focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey)),
+                        borderSide: BorderSide(color:AppColors.grey)),
                   ),
                 ),
                 TextField(
+                  textDirection: TextDirection.rtl,
                   controller: _noteController,
                   autofocus: true,
                   maxLines: null,
                   decoration: const InputDecoration(
-                    hintText: 'Write your note...',
+                    hintTextDirection: TextDirection.rtl,
+                    hintText: 'المفكره...',
                     border: InputBorder.none,
                   ),
                 )
@@ -165,12 +154,4 @@ class _NoteContainerState extends State<NoteContainer> {
           )),
     );
   }
-
-  // @override
-  // void dispose() {
-  //   print("save dispose is call");
-  //   _noteController.dispose();
-  //   _titleController.dispose();
-  //   super.dispose();
-  // }
 }
